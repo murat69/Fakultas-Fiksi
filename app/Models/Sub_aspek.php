@@ -22,4 +22,8 @@ class Sub_aspek extends Model
     {
         return $this->hasOne(monev::class, 'id', 'monev_id');
     }
+    public function prodi()
+    {
+        return $this->hasOne(prodi::class, 'id', 'prodi_id');
+    }
 }
