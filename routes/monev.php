@@ -11,4 +11,4 @@
 |
 */
 
-Route::get('/monevs/{aspek?}/{tahun?}', [App\Http\Controllers\MonevController::class, 'monev_all'])->name('monev.all');
+Route::get('/monevs/{aspek?}/{tahun?}/{prodi?}', [App\Http\Controllers\MonevController::class, 'monev_all'])->name('monev.all');

@@ -12,7 +12,7 @@
 
         .card {
             width: initial;
-            background: #47117b;
+            background: #d70000b8;
             height: initial;
             margin-top: 15px;
             box-shadow: none;
@@ -95,6 +95,15 @@
                                                     @endforeach
                                                     <!-- Add more options as needed -->
                                                 </select>
+                                                <label for="kategori" class="form-label m-0"><small>Program
+                                                        Studi</small></label>
+                                                <select class="form-select prodi" id="prodi" name="prodi">
+                                                    <!-- Option items for prodi -->
+                                                    @foreach ($prodiData as $data)
+                                                        <option value="{{ $data->prodi }}">{{ $data->prodi }}</option>
+                                                    @endforeach
+                                                    <!-- Add more options as needed -->
+                                                </select>
                                             </div>
                                             {{-- {{dd($tahun_filter)}} --}}
                                             <a href="" class="buttonajax btn btn-primary btn-sm mt-2">Cari</a>
@@ -124,8 +133,11 @@
         $(document).on('click', '.buttonajax', function() {
 
             var selectedTahun = $('.tahun').val();
-            var newURL = "{{ route('monev.all', ['aspek' => ':aspek', 'tahun' => ':tahun']) }}";
+            var selectedProdi = $('.prodi').val();
+            var newURL =
+                "{{ route('monev.all', ['aspek' => ':aspek', 'tahun' => ':tahun', 'prodi' => ':prodi']) }}";
             newURL = newURL.replace(':tahun', selectedTahun);
+            newURL = newURL.replace(':prodi', selectedProdi);
             newURL = newURL.replace(':aspek', '{{ $aspek }}');
             $('.buttonajax').attr('href', newURL);
         });

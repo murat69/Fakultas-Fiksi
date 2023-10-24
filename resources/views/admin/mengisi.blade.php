@@ -32,6 +32,11 @@
                         <input type="hidden" value="{{ $item->id }}" name="id_monev" class="id_monev">
                     @endif
                 @endforeach
+                @foreach ($prodi as $item)
+                    @if ($item->prodi == $prodis)
+                        <input type="hidden" value="{{ $item->id }}" name="id_prodi" class="id_prodi">
+                    @endif
+                @endforeach
                 <div class="card-header">
                     <!-- Button trigger modal -->
                     <div class="col-md-8" style="margin-top: 10px; margin-bottom: 10px;">
@@ -72,6 +77,22 @@
                                         </span>
                                     @enderror
                                 </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Program Studi</label>
+                                    <select class="form-control prodi @error('prodi') is-invalid @enderror" name="prodi">
+                                        @foreach ($prodi as $item)
+                                            <option value="{{ $item->prodi }}"
+                                                @if ($prodis == $item->prodi) selected @endif>
+                                                {{ $item->prodi }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('prodi')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
                                 <a class="btn btn-primary buttonajax">
                                     Cari Data
                                 </a>
@@ -88,7 +109,7 @@
 
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <h3>{{ @$monevs . ' ' . @$tahuns }}</h3>
+                    <h3>{{ @$monevs . ' ' . @$prodis . ' ' . @$tahuns }}</h3>
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header p-2">
@@ -268,10 +289,12 @@
 
                 var selectedTahun = $('.tahun').val();
                 var selectedMonev = $('.monev').val();
+                var selectedProdi = $('.prodi').val();
                 var newURL =
-                    "{{ route('admin.monev.mengisi', ['tahuns' => ':tahun', 'monevs' => ':monev']) }}";
+                    "{{ route('admin.monev.mengisi', ['tahuns' => ':tahun', 'monevs' => ':monev', 'prodis' => ':prodi']) }}";
                 newURL = newURL.replace(':tahun', selectedTahun);
                 newURL = newURL.replace(':monev', selectedMonev);
+                newURL = newURL.replace(':prodi', selectedProdi);
                 $('.buttonajax').attr('href', newURL);
             });
 
@@ -322,6 +345,7 @@
 
                 var tahun_id = $('.id_tahun').val();
                 var monev_id = $('.id_monev').val();
+                var prodi_id = $('.id_prodi').val();
 
                 var jsonResult = JSON.stringify(jsonData);
                 var csrfToken = '{{ csrf_token() }}';
@@ -336,7 +360,7 @@
 
 
                 console.log("Total" + total + "||Tahun id " + tahun_id + "||Id Sub " + id_sub +
-                    "||JSON DATA" + jsonData + "||Total value", totalvalue);
+                    "||JSON DATA" + jsonData + "||Total value", totalvalue + "||Prodi ID" + prodi_id);
 
 
                 if (total == '') {
@@ -358,6 +382,7 @@
                             totalvalue: totalvalue,
                             tahun_id: tahun_id,
                             monev_id: monev_id,
+                            prodi_id: prodi_id,
                             nama_aspek: nama_aspek,
                             json_data: jsonData
                         },

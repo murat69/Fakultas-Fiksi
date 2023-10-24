@@ -91,17 +91,10 @@ Route::middleware('role:admin,tu')->group(
         // Registrasi
         Route::prefix('carousel')->group(function () {
             Route::match(['get', 'post'], '', [App\Http\Controllers\ContenController::class, 'carousel'])->name('carousel');
-
             Route::match(['get', 'post'], 'form/{id?}', [App\Http\Controllers\ContenController::class, 'carouselForm'])->name('carousel.form');
-
             Route::post('hapus', [App\Http\Controllers\ContenController::class, 'hapusCarousel'])->name('carousel.hapus');
-
-            Route::delete('prodi/hapus/{id}', [App\Http\Controllers\ContenController::class, 'prodi_slider_destroy'])->name('prodi_slider.destroy');
-
             Route::get('prodi', [App\Http\Controllers\ContenController::class, 'prodi_slider'])->name('prodi_slider');
-
             Route::post('prodi/store', [App\Http\Controllers\ContenController::class, 'prodi_slider_store'])->name('prodi_slider.store');
-
             Route::post('prodi/update/{id}', [App\Http\Controllers\ContenController::class, 'prodi_slider_update'])->name('prodi_slider.update');
         });
         Route::prefix('tahun/')->group(
@@ -147,7 +140,7 @@ Route::middleware('role:admin,tu')->group(
 
                 Route::post('ajax', [App\Http\Controllers\MonevController::class, 'ajax_mengisi'])->name('monev.ajax');
 
-                Route::get('mengisi/{tahuns?}/{monevs?}', [App\Http\Controllers\MonevController::class, 'mengisi'])->name('admin.monev.mengisi');
+                Route::get('mengisi/{tahuns?}/{monevs?}/{prodis?}', [App\Http\Controllers\MonevController::class, 'mengisi'])->name('admin.monev.mengisi');
 
                 Route::post('store', [App\Http\Controllers\MonevController::class, 'store'])->name('admin.aspek.store');
 

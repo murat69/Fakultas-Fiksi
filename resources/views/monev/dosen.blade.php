@@ -1,648 +1,482 @@
-@extends('layouts.user')
+@extends('layouts.admin.admin')
 
-@section('style')
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
     <style>
-        section {
-            padding: 7em 0;
-        }
-
-        .person-bar {
-            align-items: center;
-        }
-
-        .card {
-            width: initial;
-            background: #007336b0;
-            height: initial;
-            margin-top: 15px;
-            box-shadow: none;
-            color: white;
-        }
-
-        .person-image {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            float: left;
-            border-radius: 50%;
-            left: 0;
-            right: 0;
-            left: -12px;
-            top: -12px;
-        }
-
-        .form-group select {
-            font-size: small;
-        }
-
-        .person-name {
-            font-weight: bold;
-            color: #ffffff;
-        }
-
-        .faq .faq-list li {
-            border-radius: 0px !important;
-        }
-
-        .faq .faq-list .list-item {
-            margin-top: 0px !important;
-        }
-
-        .text-aspek {
-            font-size: 15px;
+        .input-container {
+            margin-bottom: 50px;
         }
     </style>
 @endsection
-@section('dosen', 'active')
 
-@section('conten')
-    <section id="blog" class="blog">
-        <div class="container mt-5" data-aos="fade-up">
-            <div class="row">
-                <div class="col-lg-12 entries">
-                    <section id="team" class="team">
-                        <div class="container-fluid row" data-aos="fade-up">
-                            <div class="col-lg-12 col-md-9 col-sm-12">
-                                <div class="section-title">
-                                    <h2>{{ $title }}</h2>
+@section('content')
+    <div class="row">
+        <div class="col-12">
+            @include('layouts/flash')
+            <div class="card">
+                <div class="card-header">
+                    <!-- Button trigger modal -->
+                    <div class="col-md-8" style="margin-top: 10px; margin-bottom: 10px;">
+                        <button type="button" class="btn btn-primary buttonedit" data-toggle="modal" data-target="#myModal"
+                            data-prodi="" data-id="" data-url="{{ route('dosen.store') }}">
+                            Tambah Data {{ $title }}
+                        </button>
+                    </div>
+                    <!-- Modal -->
+                    <div class="modal
+                            fade" id="myModal" tabindex="-1"
+                        aria-labelledby="myModal" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="myModal">Input Data {{ $title }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
                                 </div>
+                                <form action="{{ route('dosen.store') }}" method="post" class="formkirim"
+                                    enctype="multipart/form-data">
+                                    <div class="modal-body">
 
-                                <!-- Form Pencarian -->
-                                <form class="mb-4">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="tahun" class="form-label"><small>Tahun</small></label>
-                                            <select class="form-select tahun" id="tahun" name="tahun">
-                                                <!-- Option items for Tahun -->
-                                                @foreach ($tahunData as $data)
-                                                    <option value="{{ $data->tahun }}">{{ $data->tahun }}</option>
-                                                @endforeach
-                                                <!-- Add more options as needed -->
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="aspek" class="form-label"><small>Aspek</small></label>
-                                            <select class="form-select monev" id="aspek" name="aspek">
-                                                <!-- Option items for Aspek -->
-                                                @foreach ($monevs as $data)
-                                                    <option value="{{ $data->nama }}">{{ $data->nama }}</option>
-                                                @endforeach
-                                                <!-- Add more options as needed -->
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <a href="" class="btn btn-primary buttonajax" type="submit">Cari</a>
-                                </form>
+                                        <div class="container">
+                                            <div class="row justify-content-center">
+                                                <div class="col-md-12">
 
-                                <div class="row">
-                                    <ul class="nav nav-tabs" id="myTabs" role="tablist">
-                                        @foreach ($monev as $item)
-                                            <li class="nav-item" role="presentation">
-                                                <a class="nav-link  text-aspek" id="tab{{ $item->id }}"
-                                                    data-bs-toggle="tab" href="#content{{ $item->id }}"
-                                                    role="tab">{{ $item->aspek }}</a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                    <div class="tab-content" id="myTabsContent">
-                                        @foreach ($monev as $item)
-                                            <div class="tab-pane fade show " id="content{{ $item->id }}"
-                                                role="tabpanel">
+                                                    @csrf
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Nama</label>
+                                                        <input type="text"
+                                                            class="form-control nama @error('nama') is-invalid @enderror"
+                                                            name="nama">
+                                                        @error('nama')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
 
-                                                <div class="col-lg-12 entries">
-                                                    @foreach ($sub_aspek as $data)
-                                                        @if ($data->aspek_monev_id == $item->id)
-                                                            <h5 class="text-center">{{ $data->nama }}</h5>
-                                                            <div class="col-md-12 mx-auto">
-                                                                <div id="{{ $data->id }}"></div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Status Jabatan</label>
+                                                        <select
+                                                            class="form-control status @error('status') is-invalid @enderror"
+                                                            name="status">
+
+                                                            <option value="Dosen">
+                                                                Dosen
+                                                            </option>
+
+                                                            <option value="Kaprodi">
+                                                                Kaprodi
+                                                            </option>
+
+                                                            <option value="Dekan">
+                                                                Dekan
+                                                            </option>
+
+                                                        </select>
+                                                        @error('mime')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Program Studi</label>
+                                                        <select
+                                                            class="form-control prodi @error('prodi') is-invalid @enderror"
+                                                            name="prodi">
+                                                            @foreach ($prodi as $item)
+                                                                <option value="{{ $item->id }}">
+                                                                    {{ $item->prodi }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                        @error('mime')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Foto (opsional)</label>
+                                                        <div class="custom-file">
+                                                            <input type="file"
+                                                                class="custom-file-input file @error('file') is-invalid @enderror"
+                                                                name="file" id_file="customFile" accept="image/*">
+                                                            <label class="custom-file-label" for="customFile">
+                                                                Pilih File
+                                                        </div>
+                                                        @error('file')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Schoolar</label>
+                                                        <input type="text"
+                                                            class="form-control schoolar @error('schoolar') is-invalid @enderror"
+                                                            name="schoolar">
+                                                        @error('schoolar')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Pddikti</label>
+                                                        <input type="text"
+                                                            class="form-control pddikti @error('pddikti') is-invalid @enderror"
+                                                            name="pddikti">
+                                                        @error('pddikti')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Linkedin</label>
+                                                        <input type="text"
+                                                            class="form-control linkedin @error('linkedin') is-invalid @enderror"
+                                                            name="linkedin">
+                                                        @error('linkedin')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Jurnal Judul</label>
+                                                        <div class="input-group">
+                                                            <input type="text" name="" class="form-control"
+                                                                id="input-judul">
+                                                        </div>
+                                                        <label class="form-label">Jurnal Link</label>
+                                                        <div class="input-group" style="margin-bottom: 30px">
+                                                            <input type="text" name="" class="form-control"
+                                                                id="input-link">
+                                                            <div class="input-group-append">
+                                                                <button type="button" class="btn btn-primary"
+                                                                    id="add-button">Tambah Jurnal</button>
                                                             </div>
-                                                        @endif
-                                                    @endforeach
-                                                    <!-- End blog entry -->
+                                                        </div>
+
+                                                        <div id="output-container">
+                                                            <div class="form-group"></div>
+                                                            <!-- Output akan ditampilkan di sini -->
+                                                        </div>
+                                                    </div>
+
                                                 </div>
                                             </div>
-                                        @endforeach
+                                        </div>
                                     </div>
-                                </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Tutup</button>
+                                        <button class="btn btn-primary" type="submit">Save changes</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-                    </section>
+                    </div>
                 </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama</th>
+                                <th>Prodi</th>
+                                <th>Status Jabatan</th>
+                                <th>Schoolar</th>
+                                <th>Pddikti</th>
+                                <th>Linkedin</th>
+                                <th>Jurnal</th>
+                                <th>Foto Profile</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                $no = 1;
+                            @endphp
+                            @foreach ($dosen as $item)
+                                <tr>
+                                    <td>{{ $no }}</td>
+                                    <td>{{ $item->nama }}</td>
+                                    <td>{{ @$item->prodi->prodi }}</td>
+                                    <td>{{ $item->status }}</td>
+                                    <td>{{ $item->schoolar }}</td>
+                                    <td>{{ $item->pddikti }}</td>
+                                    <td>{{ $item->linkedin }}</td>
+                                    <td>
+                                        <div class="card overflow-auto" style="max-height: 100px">
+                                            <div class="card-body">
+                                                <ul class="list-group">
+                                                    @foreach ($item->jurnal_link as $jurnal)
+                                                        <li class="jurnal{{ $item->id }} list-group-item"
+                                                            data-judul="{{ $jurnal->judul }}"
+                                                            data-link="{{ $jurnal->link }}"
+                                                            data-id-jurnal="{{ $jurnal->id }}"><a
+                                                                class="jurnalid{{ $jurnal->id }}"
+                                                                href="{{ $jurnal->link }}">{{ $jurnal->judul }}</a>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center">
+                                        @if ($item->file_id !== null)
+                                            <img src="{{ asset('storage/upload/file/' . $item->file->file) }}"
+                                                alt="" style="height: 100px; width: auto;">
+                                        @else
+                                            <img src="{{ asset('storage/upload/file/Default_pfp.png') }}" alt=""
+                                                style="height: 100px; width: auto;">
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <form action="{{ route('dosen.destroy', $item->id) }}" method="post">
+                                            @csrf
+                                            @method('delete')
+                                            <a href="" class="btn btn-sm btn-outline-success buttonedit"
+                                                data-toggle="modal" data-target="#myModal"
+                                                data-nama="{{ $item->nama }}" data-prodi="{{ $item->prodi_id }}"
+                                                data-id="{{ $item->id }}" data-schoolar="{{ $item->schoolar }}"
+                                                data-pddikti="{{ $item->pddikti }}" data-status="{{ $item->status }}"
+                                                data-linkedin="{{ $item->linkedin }}"
+                                                data-url="{{ route('dosen.update', $item->id) }}">
+                                                Edit
+                                            </a> |
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Apakah Anda Yakin?')">Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @php
+                                    $no++;
+                                @endphp
+                            @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama</th>
+                                <th>Prodi</th>
+                                <th>Status Jabatan</th>
+                                <th>Schoolar</th>
+                                <th>Pddikti</th>
+                                <th>Linkedin</th>
+                                <th>Jurnal</th>
+                                <th>Foto Profile</th>
+                                <th>Action</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
             </div>
         </div>
-    </section>
-
-
-
+    </div>
 @endsection
 
-@section('script')
-    <script src="{{ asset('assets/highchart/highcharts.js') }}"></script>
-    <script src="{{ asset('assets/highchart/highcharts-3d.js') }}"></script>
-    <script src="{{ asset('assets/highchart/modules/exporting.js') }}"></script>
-    <script src="{{ asset('assets/highchart/modules/export-data.js') }}"></script>
-    <script src="{{ asset('assets/highchart/modules/accessibility.js') }}"></script>
 
+@section('scripts')
+    <script src="{{ asset('admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('admin/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('admin/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('admin/plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
+    <script src="{{ asset('admin/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('admin/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('admin/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('admin/plugins/jszip/jszip.min.js') }}"></script>
+    <script src="{{ asset('admin/plugins/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('admin/plugins/pdfmake/vfs_fonts.js') }}"></script>
+    <script src="{{ asset('admin/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('admin/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('admin/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
     <script>
-        $(document).on('click', '.buttonajax', function() {
+        $(document).ready(function() {
 
-            var selectedTahun = $('.tahun').val();
-            var selectedMonev = $('.monev').val();
-            var newURL =
-
-                "{{ route('monev.all', ['aspek' => ':aspek', 'tahun' => ':tahun']) }}";
-            newURL = newURL.replace(':tahun', selectedTahun);
-            newURL = newURL.replace(':aspek', selectedMonev);
-            $('.buttonajax').attr('href', newURL);
+            $('#add-button').click(function() {
+                var inputValue = $('#input-link').val();
+                var inputValue2 = $('#input-judul').val();
+                if (inputValue !== '' && inputValue2 !== '') {
+                    var newInput = $('<input type="text" name="jurnal[]" class="form-control">').val(
+                        inputValue).prop(
+                        'readonly', true);
+                    var newInput2 = $('<input type="text" name="judul[]" class="form-control">').val(
+                        inputValue2).prop(
+                        'readonly', true);
+                    $('#output-container').append(newInput2);
+                    $('#output-container').append(newInput);
+                    $('#input-link').val('');
+                    $('#input-judul').val('');
+                }
+            });
         });
-        @foreach ($sub_aspek as $sub)
-            @if ($sub->nama === 'Rekap Kepuasan Dosen')
-                // Data JSON yang diberikan
-                console.log();
-                var jsonData = '{!! $sub->isi !!}';
 
-                // Parse JSON menjadi objek JavaScript
-                var dataObj = JSON.parse(jsonData);
+        $(function() {
+            $("#example1").DataTable({
+                "responsive": true,
+                "lengthChange": false,
+                "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            $('#example2').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+            });
+        });
 
-                // Buat data untuk chart
-                var chartData = [];
-                for (var key in dataObj) {
-                    if (dataObj.hasOwnProperty(key)) {
-                        chartData.push({
-                            name: key,
-                            y: parseFloat(dataObj[key])
-                        });
-                    }
+        $(document).on('click', '.delete-form', function() {
+            var deleted_id = $(this).attr('data_deleted_id');
+            var _token = $('input[name="_token"]').val();
+            var formData = new FormData();
+            formData.append('id', deleted_id);
+            formData.append('_token', _token);
+
+            console.log(formData);
+            $.ajax({
+                url: '{{ route('jurnal.deleted') }}',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    console.log("bisa gan");
+                    $('.jurnalid' + deleted_id).empty();
+                    $('.jurnalid' + deleted_id).remove();
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    // handle error response
                 }
-                // --------------------------- Kepuasan Dosen --------------------//
-                Highcharts.chart('{{ $sub->id }}', {
-                    chart: {
-                        plotBackgroundColor: null,
-                        plotBorderWidth: null,
-                        plotShadow: false,
-                        type: 'pie',
-                        options3d: {
-                            enabled: true,
-                            alpha: 60,
-                            beta: 0
-                        }
-                    },
-                    title: {
-                        text: '{{ $sub->nama }}',
-                        align: 'left'
-                    },
-                    tooltip: {
-                        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-                    },
-                    accessibility: {
-                        point: {
-                            valueSuffix: '%'
-                        }
-                    },
-                    plotOptions: {
-                        pie: {
-                            allowPointSelect: true,
-                            cursor: 'pointer',
-                            depth: 30,
-                            dataLabels: {
-                                enabled: true,
-                                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-                            }
-                        }
-                    },
-                    series: [{
-                        name: 'PRODI',
-                        colorByPoint: true,
-                        data: chartData,
-                    }]
-                });
-            @endif
+            });
 
-            // ----------------------------- END Kepuasan Dosen -----------------//
 
-            // ------------------------- GENDER ------------------------//
-            @if ($sub->nama === 'Jenis Kelamin')
-                // Data JSON yang diberikan
-                var jsonData = '{!! $sub->isi !!}';
 
-                // Parse JSON menjadi objek JavaScript
-                var dataObj = JSON.parse(jsonData);
 
-                // Buat data untuk chart
-                var chartData = [];
-                for (var key in dataObj) {
-                    if (dataObj.hasOwnProperty(key)) {
-                        chartData.push({
-                            name: key,
-                            y: parseFloat(dataObj[key])
-                        });
-                    }
+
+        });
+
+        $(document).on('change', '.link', function() {
+            var input = $(this);
+            var data_id_jurnal = input.attr('data_edited_id');
+            var data_link = input.val();
+            var _token = $('input[name="_token"]').val();
+
+            $.ajax({
+                url: '{{ route('jurnal.edited') }}',
+                method: 'POST',
+                data: {
+                    data_id_jurnal: data_id_jurnal,
+                    data_link: data_link,
+                    _token: _token
+                },
+                success: function(response) {
+                    // Tampilkan pesan sukses atau lakukan aksi lain yang diperlukan
+
+                },
+                error: function(xhr, status, error) {
+                    // Tampilkan pesan error atau lakukan penanganan error lainnya
+                    console.error('Terjadi kesalahan saat mengunggah data ke database');
+                    console.error(xhr.responseText);
                 }
-                Highcharts.chart('{{ $sub->id }}', {
-                    chart: {
-                        type: 'bar'
-                    },
-                    title: {
-                        align: 'left',
-                        text: 'Jenis Kelamin'
-                    },
-                    subtitle: {
-                        align: 'left',
-                        text: '8 Jawaban'
-                    },
-                    accessibility: {
-                        announceNewData: {
-                            enabled: true
-                        }
-                    },
-                    xAxis: {
-                        type: 'category'
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Jumlah'
-                        }
+            });
+        });
 
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    plotOptions: {
-                        series: {
-                            borderWidth: 0,
-                            dataLabels: {
-                                enabled: true,
-                                formatter: function() {
-                                    return (100 * this.y / {{ $sub->total }}) + '%';
-                                },
-                            }
-                        }
-                    },
+        $(document).on('change', '.judul', function() {
+            var input = $(this);
+            var data_id_jurnal = input.attr('data_edited_id');
+            var data_judul = input.val();
+            var _token = $('input[name="_token"]').val();
 
-                    tooltip: {
-                        headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-                        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b> of total<br/>'
-                    },
-
-                    series: [{
-                        name: 'Gender',
-                        colorByPoint: true,
-                        data: chartData,
-                    }]
-                });
-            @endif
-
-            // ------------------------END Gender -----------------------//
-
-            // ------------------------- USIA ------------------------//
-            @if ($sub->nama === 'Usia')
-                // Data JSON yang diberikan
-                var jsonData = '{!! $sub->isi !!}';
-
-                // Parse JSON menjadi objek JavaScript
-                var dataObj = JSON.parse(jsonData);
-
-                // Buat data untuk chart
-                var chartData = [];
-                for (var key in dataObj) {
-                    if (dataObj.hasOwnProperty(key)) {
-                        chartData.push({
-                            name: key,
-                            y: parseFloat(dataObj[key])
-                        });
-                    }
+            $.ajax({
+                url: '{{ route('jurnal.edited') }}',
+                method: 'POST',
+                data: {
+                    data_id_jurnal: data_id_jurnal,
+                    data_judul: data_judul,
+                    _token: _token
+                },
+                success: function(response) {
+                    // Tampilkan pesan sukses atau lakukan aksi lain yang diperlukan
+                    $('.jurnalid' + data_id_jurnal).empty();
+                    $('.jurnalid' + data_id_jurnal).append(data_judul);
+                },
+                error: function(xhr, status, error) {
+                    // Tampilkan pesan error atau lakukan penanganan error lainnya
+                    console.error('Terjadi kesalahan saat mengunggah data ke database');
+                    console.error(xhr.responseText);
                 }
+            });
+        });
 
-                Highcharts.chart('{{ $sub->id }}', {
-                    chart: {
-                        type: 'column'
-                    },
-                    title: {
-                        align: 'left',
-                        text: 'Usia'
-                    },
-                    subtitle: {
-                        align: 'left',
-                        text: '8 Jawaban'
-                    },
-                    accessibility: {
-                        announceNewData: {
-                            enabled: true
-                        }
-                    },
-                    xAxis: {
-                        type: 'category'
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Jumlah'
-                        }
+        $(document).on('click', '.buttonedit', function() {
+            $('#output-container').empty();
+            var data_id = $(this).attr('data-id');
+            var data_prodi = $(this).attr('data-prodi');
+            var data_nama = $(this).attr('data-nama');
+            var data_url = $(this).attr('data-url');
+            var data_schoolar = $(this).attr('data-schoolar');
+            var data_pddikti = $(this).attr('data-pddikti');
+            var data_linkedin = $(this).attr('data-linkedin');
+            var data_status = $(this).attr('data-status');
 
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    plotOptions: {
-                        series: {
-                            borderWidth: 0,
-                            dataLabels: {
-                                enabled: true,
-                                formatter: function() {
-                                    // return this.total;
-                                    return (100 * this.y / {{ $sub->total }}) + '%';
-                                },
-                            }
-                        }
-                    },
+            $('.jurnal' + data_id).each(function(index) {
+                var data_link = $(this).attr('data-link');
+                var data_judul = $(this).attr('data-judul');
+                var data_id_jurnal = $(this).attr('data-id-jurnal');
 
-                    tooltip: {
-                        headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-                        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b><br/>'
-                    },
+                var newInput = $(
+                    '<input type="text" name="jurnaledited[]" class="jurnalid' +
+                    data_id_jurnal + ' form-control link" data_edited_id="' +
+                    data_id_jurnal + '">').val(
+                    data_link);
+                var newInput2 = $(
+                    '<input type="text" name="juduledited[]" class="jurnalid' +
+                    data_id_jurnal + ' form-control judul" data_edited_id="' +
+                    data_id_jurnal + '">').val(
+                    data_judul);
 
-                    series: [{
-                        name: 'Usia',
-                        colorByPoint: true,
-                        data: chartData
-                    }]
-                });
-            @endif
-            // ------------------------END USIA -----------------------//
+                var newInput3 = $(
+                    '<button type="button" style="margin-bottom: 20px;" class="jurnalid' +
+                    data_id_jurnal + ' delete-form edited-deleted jurnal' +
+                    data_id_jurnal +
+                    '" data_deleted_id="' +
+                    data_id_jurnal + '">Delete</button>'
+                ).val(
+                    data_judul);
+                $('#output-container').append(newInput2);
+                $('#output-container').append(newInput);
+                $('#output-container').append(newInput3);
+            });
+            $('.nama').attr('value', data_nama);
+            $('.schoolar').attr('value', data_schoolar);
+            $('.pddikti').attr('value', data_pddikti);
+            $('.linkedin').attr('value', data_linkedin);
+            $('.prodi').val(data_prodi);
+            $('.status').val(data_status);
+            $('.formkirim').attr('action', data_url);
+        });
 
-            // ------------------------- MASA KERJA ------------------------//
-
-            @if ($sub->nama === 'Masa Kerja')
-                // Data JSON yang diberikan
-                var jsonData = '{!! $sub->isi !!}';
-
-                // Parse JSON menjadi objek JavaScript
-                var dataObj = JSON.parse(jsonData);
-
-                // Buat data untuk chart
-                var chartData = [];
-                for (var key in dataObj) {
-                    if (dataObj.hasOwnProperty(key)) {
-                        chartData.push({
-                            name: key,
-                            y: parseFloat(dataObj[key])
-                        });
-                    }
-                }
-
-                Highcharts.chart('{{ $sub->id }}', {
-                    chart: {
-                        type: 'column'
-                    },
-                    title: {
-                        align: 'left',
-                        text: 'Masa Kerja'
-                    },
-                    subtitle: {
-                        align: 'left',
-                        text: '8 Jawaban'
-                    },
-                    accessibility: {
-                        announceNewData: {
-                            enabled: true
-                        }
-                    },
-                    xAxis: {
-                        type: 'category'
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Jumlah'
-                        }
-
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    plotOptions: {
-                        series: {
-                            borderWidth: 0,
-                            dataLabels: {
-                                enabled: true,
-                                formatter: function() {
-                                    // return this.total;
-                                    return (100 * this.y / {{ $sub->total }}) + '%';
-                                },
-                            }
-                        }
-                    },
-
-                    tooltip: {
-                        headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-                        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b> of total<br/>'
-                    },
-
-                    series: [{
-                        name: 'jabatan',
-                        colorByPoint: true,
-                        data: chartData
-                    }]
-                });
-            @endif
-
-            // ------------------------END MASA KERJA -----------------------//
-
-            // --------------------------- Kepuasan Dosen --------------------//
-            @if ($sub->nama === 'Pendidikan Terakhir')
-                // Data JSON yang diberikan
-                var jsonData = '{!! $sub->isi !!}';
-
-                // Parse JSON menjadi objek JavaScript
-                var dataObj = JSON.parse(jsonData);
-
-                // Buat data untuk chart
-                var chartData = [];
-                for (var key in dataObj) {
-                    if (dataObj.hasOwnProperty(key)) {
-                        chartData.push({
-                            name: key,
-                            y: parseFloat(dataObj[key])
-                        });
-                    }
-                }
-
-                Highcharts.chart('{{ $sub->id }}', {
-                    chart: {
-                        plotBackgroundColor: null,
-                        plotBorderWidth: null,
-                        plotShadow: false,
-                        type: 'pie',
-                        options3d: {
-                            enabled: true,
-                            alpha: 60,
-                            beta: 0
-                        }
-                    },
-                    title: {
-                        align: 'left',
-                        text: '{{ $sub->nama }}'
-                    },
-                    tooltip: {
-                        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-                    },
-                    accessibility: {
-                        point: {
-                            valueSuffix: '%'
-                        }
-                    },
-                    plotOptions: {
-                        pie: {
-                            allowPointSelect: true,
-                            cursor: 'pointer',
-                            depth: 30,
-                            dataLabels: {
-                                enabled: true,
-                                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-                            },
-                            showInLegend: true
-                        }
-                    },
-                    series: [{
-                        name: 'Pendidikan',
-                        colorByPoint: true,
-                        data: chartData
-                    }]
-                });
-            @endif
-
-            // ----------------------------- END Kepuasan Dosen -----------------//
-
-            // ------------------------- MASA KERJA ------------------------//
-            @if ($sub->nama === 'Berapa Lama Menduduki Jabatan Struktural')
-                // Data JSON yang diberikan
-                var jsonData = '{!! $sub->isi !!}';
-
-                // Parse JSON menjadi objek JavaScript
-                var dataObj = JSON.parse(jsonData);
-
-                // Buat data untuk chart
-                var chartData = [];
-                for (var key in dataObj) {
-                    if (dataObj.hasOwnProperty(key)) {
-                        chartData.push({
-                            name: key,
-                            y: parseFloat(dataObj[key])
-                        });
-                    }
-                }
-                Highcharts.chart('{{ $sub->id }}', {
-                    chart: {
-                        type: 'column'
-                    },
-                    title:false,
-                    subtitle: {
-                        align: 'left',
-                        text: '{{ $sub->total }} Jawaban'
-                    },
-                    accessibility: {
-                        announceNewData: {
-                            enabled: true
-                        }
-                    },
-                    xAxis: {
-                        type: 'category'
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Jumlah'
-                        }
-
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    plotOptions: {
-                        series: {
-                            borderWidth: 0,
-                            dataLabels: {
-                                enabled: true,
-                                formatter: function() {
-                                    // return this.total;
-                                    return (100 * this.y / {{ $sub->total }}) + '%';
-                                },
-                            }
-                        }
-                    },
-
-                    tooltip: {
-                        headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-                        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b> of total<br/>'
-                    },
-
-                    series: [{
-                        name: 'jabatan',
-                        colorByPoint: true,
-                        data: chartData
-                    }]
-                });
-            @endif
-            @if (
-                $sub->nama !== 'Berapa Lama Menduduki Jabatan Struktural' ||
-                    $sub->nama == 'Pendidikan Terakhir' ||
-                    $sub->nama == 'Masa Kerja' ||
-                    $sub->nama == 'Usia' ||
-                    $sub->nama == 'Jenis Kelamin' ||
-                    $sub->nama == 'Rekap Kepuasan Dosen')
-                var jsonData = '{!! $sub->isi !!}';
-
-                // Parse JSON menjadi objek JavaScript
-                var dataObj = JSON.parse(jsonData);
-
-                // Buat data untuk chart
-                var chartData = [];
-                for (var key in dataObj) {
-                    if (dataObj.hasOwnProperty(key)) {
-                        chartData.push({
-                            name: key,
-                            y: parseFloat(dataObj[key])
-                        });
-                    }
-                }
-                Highcharts.chart('{{ $sub->id }}', {
-                    chart: {
-                        plotBackgroundColor: null,
-                        plotBorderWidth: null,
-                        plotShadow: false,
-                        type: 'pie',
-                        options3d: {
-                            enabled: true,
-                            alpha: 60,
-                            beta: 0
-                        }
-                    },
-                    title: false,
-                    tooltip: {
-                        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-                    },
-                    accessibility: {
-                        point: {
-                            valueSuffix: '%'
-                        }
-                    },
-                    plotOptions: {
-                        pie: {
-                            allowPointSelect: true,
-                            cursor: 'pointer',
-                            depth: 30,
-                            dataLabels: {
-                                enabled: true,
-                                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-                            },
-                            showInLegend: true
-                        }
-                    },
-                    series: [{
-                        name: 'Dosen',
-                        colorByPoint: true,
-                        data: chartData
-                    }]
-                });
-            @endif
-        @endforeach
-        // ------------------------END MASA KERJA -----------------------//
+        $(function() {
+            bsCustomFileInput.init();
+        });
     </script>
 @endsection

@@ -75,7 +75,7 @@ class MonevController extends Controller
     }
 
 
-    public function mengisi($tahuns = null, $monevs = null)
+    public function mengisi($tahuns = null, $monevs = null, $prodis = null)
     {
         $status = "tambah";
         $aspek = Aspek_monev::orderBy('id', 'ASC')->get();
@@ -83,19 +83,21 @@ class MonevController extends Controller
         $form = template_monev::whereHas('monev', function ($query) use ($monevs) {
             $query->where('nama', $monevs);
         })->get();
-        if ($tahuns && $monevs) {
-            $aspek = Aspek_monev::whereHas('sub_aspek', function ($query) use ($monevs) {
+        if ($tahuns && $monevs && $prodis) {
+            $aspek = Aspek_monev::whereHas('template_monev', function ($query) use ($monevs) {
                 $query->whereHas('monev', function ($query) use ($monevs) {
                     $query->where('nama', $monevs);
                 });
             })->get();
 
             $tahun_select = Tahun::where('tahun', $tahuns)->first();
+            $prodi_select = prodi::where('prodi', $prodis)->first();
             $form = template_monev::leftJoinSub(
-                function ($query) use ($tahun_select) {
+                function ($query) use ($tahun_select, $prodi_select) {
                     $query->select('id as id_sub', 'template_id', 'isi as isi_sub', 'total as total_sub', 'flag as flag_sub', 'monev_id as monev_id_sub', 'tahun_id as tahun_id_sub', 'aspek_monev_id as aspek_monev_id_sub')
                         ->from('sub_aspek')
-                        ->where('tahun_id', $tahun_select->id);
+                        ->where('tahun_id', $tahun_select->id)
+                        ->where('prodi_id', $prodi_select->id);
                 },
                 'aspek',
                 function ($join) {
@@ -109,7 +111,8 @@ class MonevController extends Controller
         $title = "Monev";
         $tahun = Tahun::get();
         $monev = monev::get();
-        return view('admin.mengisi', compact('aspek', 'monev', 'title', 'tahun', 'monevs', 'tahuns', 'form'));
+        $prodi = prodi::get();
+        return view('admin.mengisi', compact('prodi', 'aspek', 'monev', 'title', 'tahun', 'monevs', 'tahuns', 'form', 'prodis'));
     }
     public function ajax_mengisi(Request $request)
     {
@@ -125,6 +128,7 @@ class MonevController extends Controller
                 $subAspek->total = $requestData['total'];
                 $subAspek->template_id = $requestData['id_template'];
                 $subAspek->monev_id = $requestData['monev_id'];
+                $subAspek->prodi_id = $requestData['prodi_id'];
                 $subAspek->aspek_monev_id = $requestData['id'];
                 $subAspek->nama = $requestData['nama_aspek'];
                 $subAspek->isi = json_encode($requestData['json_data']);
@@ -265,7 +269,7 @@ class MonevController extends Controller
 
 
 
-    public function monev_all(Request $request, $aspek = NULL, $tahun = NULL)
+    public function monev_all(Request $request, $aspek = NULL, $tahun = NULL, $prodi = null)
     {
         $hero = "kosong";
         $title = $aspek;
@@ -273,7 +277,8 @@ class MonevController extends Controller
         $tahunData = Tahun::whereIn('id', function ($query) {
             $query->select('tahun_id')->from('sub_aspek');
         })->get();
-        if ($tahun && $aspek) {
+        $prodiData = prodi::get();
+        if ($tahun && $aspek && $prodi) {
             $monev = Aspek_monev::whereHas('sub_aspek', function ($query) use ($aspek) {
                 $query->whereHas('monev', function ($query) use ($aspek) {
                     $query->where('nama', $aspek);
@@ -289,11 +294,16 @@ class MonevController extends Controller
                 function ($query) use ($tahun) {
                     $query->where('tahun', $tahun);
                 }
+            )->whereHas(
+                'prodi',
+                function ($query) use ($prodi) {
+                    $query->where('prodi', $prodi);
+                }
             )->get();
 
-            return view('monev.dosen', compact('title', 'hero', 'sub_aspek', 'monev', 'monevs', 'tahun', 'tahunData'));
+            return view('monev.dosen', compact('title', 'hero', 'sub_aspek', 'monev', 'monevs', 'tahun', 'tahunData', 'prodiData', 'prodi'));
         }
-        return view('monev.index', compact('title', 'hero', 'tahunData', 'aspek', 'monevs'));
+        return view('monev.index', compact('title', 'hero', 'tahunData', 'prodiData', 'aspek', 'monevs'));
     }
 
     public function monev_mahasiswa(Request $request, $aspek = NULL)
