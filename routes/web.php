@@ -96,6 +96,7 @@ Route::middleware('role:admin,tu')->group(
             Route::get('prodi', [App\Http\Controllers\ContenController::class, 'prodi_slider'])->name('prodi_slider');
             Route::post('prodi/store', [App\Http\Controllers\ContenController::class, 'prodi_slider_store'])->name('prodi_slider.store');
             Route::post('prodi/update/{id}', [App\Http\Controllers\ContenController::class, 'prodi_slider_update'])->name('prodi_slider.update');
+            Route::delete('prodi/destroy/{id}', [App\Http\Controllers\ContenController::class, 'prodi_slider_destroy'])->name('prodi_slider.destroy');
         });
         Route::prefix('tahun/')->group(
             function () {
