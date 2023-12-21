@@ -109,8 +109,7 @@
                                                         <div class="col-md-6">
                                                             <select name="role" class="form-control" id="exampleSelect">
                                                                 <option value="admin">Admin</option>
-                                                                <option value="tu">TU</option>
-                                                                <option value="dosen">Dosen</option>
+                                                                <option value="verifikator">verifikator</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -140,8 +139,7 @@
                         </div>
                     </div>
 
-                    <div class="modal fade" id="pass" tabindex="-1"
-                        aria-labelledby="pass" aria-hidden="true">
+                    <div class="modal fade" id="pass" tabindex="-1" aria-labelledby="pass" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -157,7 +155,7 @@
                                                 <div class="col-md-12">
 
                                                     @csrf
-                                      
+
                                                     <div class="row mb-3">
                                                         <label for="password"
                                                             class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
@@ -235,15 +233,14 @@
                                             <div class="myDiv" data-send="email">{{ $item->email }}</div>
                                         </div>
                                     </td>
-                                    <td> 
+                                    <td>
                                         {{-- {{ Auth::user()->role }} --}}
                                         <select class="inputRole form-control" id="inputRole" name="role"
                                             data-id="{{ $item->id }}">
                                             <option value="admin" @if ($item->role == 'admin') selected @endif>Admin
                                             </option>
-                                            <option value="tu" @if ($item->role == 'tu') selected @endif>TU
-                                            </option>
-                                            <option value="dosen" @if ($item->role == 'dosen') selected @endif>Dosen
+                                            <option value="verifikator" @if ($item->role == 'verifikator') selected @endif>
+                                                verifikator
                                             </option>
                                         </select>
                                     </td>
@@ -252,9 +249,10 @@
                                             @csrf
                                             @method('delete')
                                             <a href="" class="btn btn-sm btn-outline-success buttonedit"
-                                            data-toggle="modal" data-url="{{ route('change.password', $item->id) }}" data-target="#pass">
-                                            Ubah Password
-                                        </a> |
+                                                data-toggle="modal" data-url="{{ route('change.password', $item->id) }}"
+                                                data-target="#pass">
+                                                Ubah Password
+                                            </a> |
                                             <button type="submit" class="btn btn-sm btn-outline-danger"
                                                 onclick="return confirm('Apakah Anda Yakin?')">Delete
                                             </button>

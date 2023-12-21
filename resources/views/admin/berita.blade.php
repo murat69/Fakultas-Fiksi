@@ -219,12 +219,13 @@
                             <tr>
                                 <th>No</th>
                                 <th>Header</th>
-                                <th>Judul</th>
-                                <th>Isi</th>
                                 <th>Prodi</th>
                                 <th>Tanggal</th>
-                                <th>Thumbnail</th>
-                                <th>File</th>
+                                <th>Gallery</th>
+                                <th>Pesan</th>
+                                @if (auth()->user()->role === 'verifikator')
+                                    <th>Status</th>
+                                @endif
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -234,16 +235,11 @@
                             @endphp
                             @foreach ($berita as $item)
                                 <tr>
-                                    <td>{{ $no }}</td>
+                                    <td @if ($item->status === 0) style="background: #ff0000; color: #fff;" @endif>
+                                        {{ $no }}</td>
                                     <td>{{ $item->header }}</td>
-                                    <td>{{ $item->judul }}</td>
-                                    <td>{!! Str::limit(strip_tags($item->isi), 200) !!}</td>
                                     <td>{{ @$item->prodi->prodi }}</td>
                                     <td>{{ $item->tanggal }}</td>
-                                    <td>
-                                        <img src="{{ asset('storage/upload/file/berita/thumbnail/' . $item->thumbnail) }}"
-                                            alt="" style="height: 100px; width: auto;">
-                                    </td>
                                     <td>
                                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                             data-target="#modalimg{{ $no }}">
@@ -251,20 +247,54 @@
                                         </button>
                                     </td>
                                     <td>
+                                        @if (auth()->user()->role === 'verifikator')
+                                            <div class="form-group">
+                                                <input type="text" class="form-control pesan" name="pesan"
+                                                    data_id="{{ $item->id }}" value="{{ $item->pesan }}">
+                                            </div>
+                                        @else
+                                            {{ $item->pesan }}
+                                        @endif
+                                    </td>
+                                    @if (auth()->user()->role === 'verifikator')
+                                        <td>
+                                            <div
+                                                class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                                <input type="checkbox" class="tampilkan custom-control-input"
+                                                    id="customSwitch{{ $item->id }}" value="1" name="status"
+                                                    data-id="{{ $item->id }}"
+                                                    @if ($item->status == 1) checked @endif />
+                                                <label class="custom-control-label"
+                                                    for="customSwitch{{ $item->id }}">Tampilkan
+                                                </label>
+                                            </div>
+                                        </td>
+                                    @endif
+
+                                    <td>
                                         <form action="{{ route('berita.destroy', $item->id) }}" method="post">
                                             @csrf
                                             @method('delete')
+                                            @if (auth()->user()->role != 'verifikator')
+                                                <a href="" class="btn btn-sm btn-outline-success buttonedit"
+                                                    data-toggle="modal" data-target="#myModal"
+                                                    data-isi="{{ $item->isi }}" data-judul="{{ $item->judul }}"
+                                                    data-prodi="{{ $item->prodi_id }}"
+                                                    data-url="{{ route('berita.update', $item->id) }}"
+                                                    data-tanggal="{{ $item->tanggal }}"
+                                                    data-header="{{ $item->header }}">
+                                                    Edit
+                                                </a> |
+                                            @endif
                                             <a href="" class="btn btn-sm btn-outline-success buttonedit"
-                                                data-toggle="modal" data-target="#myModal"
-                                                data-isi="{{ $item->isi }}" data-judul="{{ $item->judul }}"
-                                                data-prodi="{{ $item->prodi_id }}"
-                                                data-url="{{ route('berita.update', $item->id) }}"
-                                                data-tanggal="{{ $item->tanggal }}" data-header="{{ $item->header }}">
-                                                Edit
-                                            </a> |
-                                            <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                onclick="return confirm('Apakah Anda Yakin?')">Delete
-                                            </button>
+                                                data-toggle="modal" data-target="#modalprev{{ $no }}">
+                                                Preview
+                                            </a>
+                                            @if (auth()->user()->role != 'verifikator')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                    onclick="return confirm('Apakah Anda Yakin?')">Delete
+                                                </button>
+                                            @endif
                                         </form>
                                     </td>
                                 </tr>
@@ -360,29 +390,82 @@
                                         </div>
                                     </div>
                                 </div>
-                                @php
-                                    $no++;
-                                @endphp
-                            @endforeach
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>No</th>
-                                <th>Header</th>
-                                <th>Judul</th>
-                                <th>Isi</th>
-                                <th>Prodi</th>
-                                <th>Tanggal</th>
-                                <th>Thumbnail</th>
-                                <th>File</th>
-                                <th>Action</th>
-                            </tr>
-                        </tfoot>
-                    </table>
+
+                                <div class="modal fade" id="modalprev{{ $no }}" tabindex="-1"
+                                    aria-labelledby="modalimg" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="modalprev">Preview {{ $title }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="container">
+                                                    <div class="row justify-content-center">
+                                                        <div class="col-md-12">
+                                                            <p class="isiprev" style="text-align: center">
+                                                                <strong> {{ $item->judul }} </strong>
+                                                            </p>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <img class="imageprev" style="width: 100%;"
+                                                                src="{{ asset('storage/upload/file/berita/thumbnail/' . $item->thumbnail) }}"
+                                                                alt="">
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <p class="isiprev">
+                                                                {!! $item->isi !!}
+                                                            </p>
+                                                        </div>
+                                                        <p class="isiprev" style="text-align: center">
+                                                            <strong> Gallery </strong>
+                                                        </p>
+                                                        <div class="col-md-12">
+                                                            <div class="scroll-container">
+
+                                                                @foreach ($item->file_berita as $image)
+                                                                    <div class="image-wrapper">
+                                                                        <img class="img_gallery_{{ $image->id }}"
+                                                                            src="{{ asset('storage/upload/file/berita/gallery' . '/' . $image->file) }}"
+                                                                            alt=""
+                                                                            style=" min-width: 150px; min-height: 150px; max-height: 150px;">
+                                                                    </div>
+                                                                @endforeach
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                 </div>
-                <!-- /.card-body -->
+                @php
+                    $no++;
+                @endphp
+                @endforeach
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>No</th>
+                        <th>Header</th>
+                        <th>Prodi</th>
+                        <th>Tanggal</th>
+                        <th>Gallery</th>
+                        <th>Pesan</th>
+                        @if (auth()->user()->role === 'verifikator')
+                            <th>Status</th>
+                        @endif
+                        <th>Action</th>
+                    </tr>
+                </tfoot>
+                </table>
             </div>
+            <!-- /.card-body -->
         </div>
+    </div>
     </div>
 @endsection
 
@@ -406,6 +489,49 @@
     <!-- Summernote -->
     <script src="{{ asset('admin/plugins/summernote/summernote-bs4.min.js') }}"></script>
     <script>
+        $('.pesan').on('blur', function() {
+            var inputValue = $(this).val();
+            var csrfToken = '{{ csrf_token() }}';
+            var data_id = $(this).attr('data_id');
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('berita.pesan') }}',
+                data: {
+                    pesan: inputValue,
+                    _token: csrfToken,
+                    id: data_id,
+                },
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Terjadi kesalahan saat mengirim data: ' + error);
+                }
+            });
+        });
+        $('.tampilkan').change(function() {
+            var checkboxId = $(this).attr('data-id');
+            var isChecked = $(this).is(':checked');
+            var _token = $('input[name="_token"]').val();
+            // Kirim data melalui AJAX
+            $.ajax({
+                url: '{{ route('berita.tampilkan.update') }}', // Ganti 'route_name' dengan nama rute Laravel Anda
+                type: 'POST',
+                data: {
+                    status: isChecked ? 1 : 0,
+                    no: checkboxId, // Mengirim nilai $no melalui data AJAX
+                    _token: _token
+                },
+                success: function(response) {
+                    // Tanggapan sukses dari server
+                    console.log(response);
+                },
+                error: function(xhr) {
+                    // Penanganan kesalahan
+                    console.log(xhr.responseText);
+                }
+            });
+        });
         $('#summernote').summernote({
             placeholder: 'DESKRIPSI ISI',
             tabsize: 2,

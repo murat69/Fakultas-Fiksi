@@ -62,13 +62,13 @@ Route::prefix('program-studi/')->group(
 
 
 
-Route::middleware('role:admin,dosen,tu')->group(
+Route::middleware('role:admin,dosen,tu,verifikator')->group(
     function () {
         Route::post('/change-password/{id}', [App\Http\Controllers\AkunController::class, 'changePassword'])->name('change.password');
     }
 );
 
-Route::middleware('role:admin,dosen')->group(
+Route::middleware('role:admin,dosen,verifikator')->group(
     function () {
         Route::prefix('profile/')->group(
             function () {
@@ -85,7 +85,7 @@ Route::middleware('role:admin,dosen')->group(
     }
 );
 
-Route::middleware('role:admin,tu')->group(
+Route::middleware('role:admin,tu,verifikator')->group(
     function () {
 
         // Registrasi
@@ -250,6 +250,8 @@ Route::middleware('role:admin,tu')->group(
                 Route::post('img_add/store/{id}', [App\Http\Controllers\BeritaController::class, 'img_add'])->name('berita.image');
                 Route::post('img_edit/store', [App\Http\Controllers\BeritaController::class, 'img_edit'])->name('berita.img_edit');
                 Route::post('update/{id}', [App\Http\Controllers\BeritaController::class, 'update'])->name('berita.update');
+                Route::post('update_tampilkan', [App\Http\Controllers\BeritaController::class, 'update_tampilkan'])->name('berita.tampilkan.update');
+                Route::post('update_pesan', [App\Http\Controllers\BeritaController::class, 'update_pesan'])->name('berita.pesan');
                 Route::delete('destroy/{id}', [App\Http\Controllers\BeritaController::class, 'destroy'])->name('berita.destroy');
             }
         );

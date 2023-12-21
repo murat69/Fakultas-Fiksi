@@ -56,8 +56,8 @@ class HomeController extends Controller
 
     public function berita()
     {
-        $berita = Berita::with('prodi', 'file_berita')->orderBy('tanggal', 'desc')->get();
-        $terbaru = Berita::with('prodi', 'file_berita')->latest()->take(3)->get();;
+        $berita = Berita::with('prodi', 'file_berita')->where('status', 1)->orderBy('tanggal', 'desc')->get();
+        $terbaru = Berita::with('prodi', 'file_berita')->where('status', 1)->latest()->take(3)->get();;
         $title = "Berita";
         $prodi = prodi::get();
         $hero = "kosong";
@@ -68,12 +68,12 @@ class HomeController extends Controller
     public function cari_berita(Request $request)
     {
         $search = $request->cari;
-        $berita = Berita::with('prodi', 'file_berita')->where('judul', 'LIKE', '%' . $search . '%')
+        $berita = Berita::with('prodi', 'file_berita')->where('judul', 'LIKE', '%' . $search . '%')->where('status', 1)
             ->orWhere('isi', 'LIKE', '%' . $search . '%')
             ->orWhereHas('prodi', function ($query) use ($search) {
                 $query->where('prodi', 'LIKE', '%' . $search . '%');
             })->orderBy('tanggal', 'desc')->get();
-        $terbaru = Berita::with('prodi', 'file_berita')->latest()->take(3)->get();;
+        $terbaru = Berita::with('prodi', 'file_berita')->where('status', 1)->latest()->take(3)->get();;
         $title = "Berita";
         $prodi = prodi::get();
         $hero = "kosong";
@@ -87,7 +87,7 @@ class HomeController extends Controller
         $secure = denc($slug[0]);
         $replace = str_replace($slug[0] . '-', '', $id);
         $berita = Berita::with('prodi', 'file_berita')->where('id', $secure)->first();
-        $terbaru = Berita::with('prodi', 'file_berita')->latest()->take(3)->get();
+        $terbaru = Berita::with('prodi', 'file_berita')->where('status', 1)->latest()->take(3)->get();
 
         $title = "Berita";
         $prodi = prodi::get();

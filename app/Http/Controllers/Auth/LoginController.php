@@ -30,10 +30,8 @@ class LoginController extends Controller
     {
         if (auth()->user()->role === 'admin') {
             return route('akun');
-        } else if (auth()->user()->role === 'dosen') {
-            return route('profile');
-        } else if (auth()->user()->role === 'tu') {
-            return route('akun');
+        } else if (auth()->user()->role === 'verifikator') {
+            return route('berita');
         }
     }
 

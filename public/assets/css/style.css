@@ -450,7 +450,7 @@ h6 {
     bottom: 15px;
     padding: 10px 0;
     border-radius: 10px;
-    background-color: #fff;
+    background-color: #025936;
     overflow-y: auto;
     transition: 0.3s;
     display: flex;
@@ -2144,7 +2144,7 @@ section {
     position: relative;
     width: 320px;
     height: 450px;
-    background-image: url(../img/logo/INFOMATIKA.jpg);
+    background-image: url(../img/logo/ilkom.jpg);
     overflow: hidden;
     background-size: cover;
     background-position: center;
@@ -2167,7 +2167,7 @@ section {
 }
 
 .container .card-sasing:after {
-    content: "INFORMATIKA";
+    content: "KOMUNIKASI";
     position: absolute;
     top: 30%;
     left: -1%;
@@ -2315,7 +2315,7 @@ section {
     position: relative;
     width: 320px;
     height: 450px;
-    background-image: url(../img/logo/SI.jpg);
+    background-image: url(../img/logo/sasing.png);
     border-radius: 20px;
     overflow: hidden;
     background-size: cover;
@@ -2340,7 +2340,7 @@ section {
 }
 
 .container .card-ilkom:after {
-    content: "INFORMASI";
+    content: "sasing";
     position: absolute;
     top: 30%;
     left: 13%;

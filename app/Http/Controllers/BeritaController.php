@@ -239,4 +239,17 @@ class BeritaController extends Controller
         return redirect()->route('berita')
             ->with('success', 'Data berhasil Di hapus!');
     }
+
+    public function update_tampilkan(Request $request)
+    {
+        $berita = Berita::findOrFail($request->no);
+        $berita->status = $request->status;
+        $berita->save();
+    }
+    public function update_pesan(Request $request)
+    {
+        $berita = Berita::findOrFail($request->id);
+        $berita->pesan = $request->pesan;
+        $berita->save();
+    }
 }
